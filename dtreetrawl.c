@@ -364,10 +364,12 @@ int dtree_check(const char *path, const struct stat *sbuf, int type,
                                 update_root_checksum((guchar *) tent.hash);
                 }
 
-                if (IS_TERSE)
-                        output_terse_trawlent(&tent, DELIM);
-                else
-                        output_human_trawlent(&tent);
+                if (!IS_PRINT_ONLY_ROOT_HASH) {
+                        if (IS_TERSE)
+                                output_terse_trawlent(&tent, DELIM);
+                        else
+                                output_human_trawlent(&tent);
+                }
                 free(tent.hash);
                 free(tent.refname);
 
@@ -495,10 +497,14 @@ int main(int argc, char *argv[])
                         DSTAT->hash_type = HASH_TYPE;
                 }
 
-                if (IS_TERSE)
-                        output_terse_dtreestat(DSTAT, DELIM);
-                else
-                        output_human_dtreestat(DSTAT);
+                if (!IS_PRINT_ONLY_ROOT_HASH) {
+                        if (IS_TERSE)
+                                output_terse_dtreestat(DSTAT, DELIM);
+                        else
+                                output_human_dtreestat(DSTAT);
+                } else {
+                        fprintf(stdout, "%s\n", (char *) root_hash_str ? (char *) root_hash_str : "");
+                }
                 g_free(root_hash_str);
                 g_free(now_local);
                 g_free(now_utc);

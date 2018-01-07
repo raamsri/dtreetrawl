@@ -15,6 +15,8 @@ Application Options:
   --hash                 Hash the files to produce checksums(default is MD5).
   -c, --checksum=md5     Valid hashing algorithms: md5, sha1, sha256, sha512.
   -s, --hash-symlink     Include symbolic links' referent name while calculating the root checksum
+  -R, --only-root-hash   Output only the root hash. NULL if --hash is not set
+
 ```
 
 Stats of all paths passed as arguments to `dtreetrawl` is printed to the standard output, errors to standard error.
