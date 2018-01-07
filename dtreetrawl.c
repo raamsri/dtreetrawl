@@ -187,6 +187,26 @@ void output_terse_dtreestat(struct dtreestat *dstat, char *delim)
         fprintf(stdout, "\n\n");
 }
 
+gchar *get_dirent_checksum(struct dirent **entrylist, int count, GChecksumType checksum_type_g)
+{
+        gchar *hash_str;
+        GChecksum *cksum_g = NULL;
+        cksum_g = g_checksum_new(checksum_type_g);
+        if (cksum_g == NULL) {
+                fprintf(stderr, "g_checksum_new returned NULL\n");
+                return NULL;
+        }
+
+        int i = 0;
+        while (i < count) {
+                g_checksum_update(cksum_g, (guchar *) entrylist[i], (gssize) strlen((char *)entrylist[i]));
+                i++;
+        }
+        hash_str = g_strdup(g_checksum_get_string(cksum_g));
+        g_checksum_free(cksum_g);
+
+        return hash_str;
+}
 
 gchar *get_file_checksum(const char *file_path, GChecksumType checksum_type_g)
 {
@@ -255,8 +275,16 @@ int action_trawlent(struct trawlent *tent)
                         perror("scandir");
                         return -1;
                 }
-
                 tent->ndirent = nentry;
+
+                if (IS_HASH && !IS_HASH_EXCLUDE_CONTENT) {
+                        char *cksum = NULL;
+                        cksum = (char *) get_dirent_checksum(entrylist, nentry, CHECKSUM_G);
+                        if (cksum == NULL)
+                                return -1;
+                        tent->hash = cksum;
+                }
+
                 while (nentry--)
                         free(entrylist[nentry]);
                 free(entrylist);
@@ -361,10 +389,12 @@ int dtree_check(const char *path, const struct stat *sbuf, int type,
                         return FTW_STOP;
 
                 if (IS_HASH) {
-                        if (!IS_HASH_EXCLUDE_NAME) {
+                        if (!IS_HASH_EXCLUDE_CONTENT) {
                                 if (S_ISREG(tent.tstat->st_mode))
                                         update_root_checksum((guchar *) tent.hash);
                                 else if (S_ISLNK(tent.tstat->st_mode) && IS_HASH_SYMLINK)
+                                        update_root_checksum((guchar *) tent.hash);
+                                else if (S_ISDIR(tent.tstat->st_mode) && IS_HASH_DIRENT)
                                         update_root_checksum((guchar *) tent.hash);
                         }
                         if (!IS_HASH_EXCLUDE_NAME)

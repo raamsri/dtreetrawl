@@ -13,12 +13,13 @@ Application Options:
   -t, --terse               Produce a terse output; parsable.
   -d, --delim=:             Character or string delimiter/separator for terse output(default ':')
   -l, --max-level=N         Do not traverse tree beyond N level(s)
-  --hash                    Hash the files to produce checksums(default is MD5).
+  --hash                    Enable hashing(default is MD5).
   -c, --checksum=md5        Valid hashing algorithms: md5, sha1, sha256, sha512.
-  -s, --hash-symlink        Include symbolic links' referent name while calculating the root checksum
   -R, --only-root-hash      Output only the root hash. Blank line if --hash is not set
   -N, --no-name-hash        Exclude path name while calculating the root checksum
   -F, --no-content-hash     Do not hash the contents of the file
+  -s, --hash-symlink        Include symbolic links' referent name while calculating the root checksum
+  -e, --hash-dirent         Include hash of directory entries while calculating root checksum
 ```
 
 Stats of all paths passed as arguments to `dtreetrawl` is printed to the standard output, errors to standard error.
