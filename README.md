@@ -16,6 +16,7 @@ Application Options:
   -c, --checksum=md5     Valid hashing algorithms: md5, sha1, sha256, sha512.
   -s, --hash-symlink     Include symbolic links' referent name while calculating the root checksum
   -R, --only-root-hash   Output only the root hash. NULL if --hash is not set
+  -N, --no-name-hash     Exclude path name while calculating the root checksum
 
 ```
 

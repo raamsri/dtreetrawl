@@ -362,6 +362,8 @@ int dtree_check(const char *path, const struct stat *sbuf, int type,
                                 update_root_checksum((guchar *) tent.hash);
                         else if (S_ISLNK(tent.tstat->st_mode) && IS_HASH_SYMLINK)
                                 update_root_checksum((guchar *) tent.hash);
+                        if (!IS_HASH_EXCLUDE_NAME)
+                                update_root_checksum((guchar *) path);
                 }
 
                 if (!IS_PRINT_ONLY_ROOT_HASH) {

@@ -40,6 +40,7 @@ static gchar    *HASH_TYPE;
 static gboolean IS_PRINT_ONLY_ROOT_HASH = FALSE;
 static gboolean IS_TERSE = FALSE;
 static gboolean IS_HASH = FALSE;
+static gboolean IS_HASH_EXCLUDE_NAME = FALSE;
 static gboolean IS_HASH_SYMLINK = FALSE;
 //static gboolean IS_HASH_DIRENT;
 
@@ -50,6 +51,7 @@ static GOptionEntry entries_g[] = {
         { "checksum", 'c', 0, G_OPTION_ARG_STRING, &HASH_TYPE, "Valid hashing algorithms: md5, sha1, sha256, sha512.", "md5" },
         { "hash-symlink", 's', 0, G_OPTION_ARG_NONE, &IS_HASH_SYMLINK, "Include symbolic links' referent name while calculating the root checksum", NULL },
         { "only-root-hash", 'R', 0, G_OPTION_ARG_NONE, &IS_PRINT_ONLY_ROOT_HASH, "Output only the root hash. Blank line if --hash is not set", NULL },
+        { "no-name-hash", 'N', 0, G_OPTION_ARG_NONE, &IS_HASH_EXCLUDE_NAME, "Exclude path name while calculating the root checksum", NULL },
         { NULL }
 };
 
