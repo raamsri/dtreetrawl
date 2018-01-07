@@ -336,6 +336,8 @@ int dtree_check(const char *path, const struct stat *sbuf, int type,
 {
         if (ftwb->level == 0 && type == FTW_D)
                 return FTW_CONTINUE;
+        if (MAX_LEVEL != -1 && ftwb->level > MAX_LEVEL)
+                return FTW_SKIP_SIBLINGS;
 	switch(type) {
 	case FTW_DNR:
 	case FTW_NS:
