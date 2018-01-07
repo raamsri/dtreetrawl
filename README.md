@@ -7,16 +7,17 @@ Usage:
   dtreetrawl [OPTION...] "/trawl/me" [path2,...]
 
 Help Options:
-  -h, --help             Show help options
+  -h, --help                Show help options
 
 Application Options:
-  -t, --terse            Produce a terse output; parsable.
-  -d, --delim=:          Character or string delimiter/separator for terse output(default ':')
-  --hash                 Hash the files to produce checksums(default is MD5).
-  -c, --checksum=md5     Valid hashing algorithms: md5, sha1, sha256, sha512.
-  -s, --hash-symlink     Include symbolic links' referent name while calculating the root checksum
-  -R, --only-root-hash   Output only the root hash. NULL if --hash is not set
-  -N, --no-name-hash     Exclude path name while calculating the root checksum
+  -t, --terse               Produce a terse output; parsable.
+  -d, --delim=:             Character or string delimiter/separator for terse output(default ':')
+  --hash                    Hash the files to produce checksums(default is MD5).
+  -c, --checksum=md5        Valid hashing algorithms: md5, sha1, sha256, sha512.
+  -s, --hash-symlink        Include symbolic links' referent name while calculating the root checksum
+  -R, --only-root-hash      Output only the root hash. Blank line if --hash is not set
+  -N, --no-name-hash        Exclude path name while calculating the root checksum
+  -F, --no-content-hash     Do not hash the contents of the file
 
 ```
 

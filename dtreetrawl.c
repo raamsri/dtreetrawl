@@ -236,7 +236,8 @@ gchar *get_file_checksum(const char *file_path, GChecksumType checksum_type_g)
 
 void update_root_checksum(guchar *hash_str)
 {
-        g_checksum_update(ROOT_CKSUM_G, (guchar *) hash_str, (gssize) strlen((char *) hash_str));
+        if (hash_str)
+                g_checksum_update(ROOT_CKSUM_G, (guchar *) hash_str, (gssize) strlen((char *) hash_str));
 }
 
 
@@ -266,7 +267,7 @@ int action_trawlent(struct trawlent *tent)
                 tent->refname = NULL;
 
                 char *cksum = NULL;
-                if (IS_HASH) {
+                if (IS_HASH && !IS_HASH_EXCLUDE_CONTENT) {
                         cksum = (char *) get_file_checksum(tent->path, CHECKSUM_G);
                         if (cksum == NULL)
                                 return -1;
@@ -297,7 +298,7 @@ int action_trawlent(struct trawlent *tent)
                 tent->refname = linkname;
 
                 char *cksum = NULL;
-                if (IS_HASH) {
+                if (IS_HASH && !IS_HASH_EXCLUDE_CONTENT) {
                         cksum = (char *) g_compute_checksum_for_string(CHECKSUM_G, (gchar *) tent->path, (gssize) strlen(tent->path));
                         if (cksum == NULL)
                                 return -1;
@@ -358,10 +359,12 @@ int dtree_check(const char *path, const struct stat *sbuf, int type,
                         return FTW_STOP;
 
                 if (IS_HASH) {
-                        if (S_ISREG(tent.tstat->st_mode))
-                                update_root_checksum((guchar *) tent.hash);
-                        else if (S_ISLNK(tent.tstat->st_mode) && IS_HASH_SYMLINK)
-                                update_root_checksum((guchar *) tent.hash);
+                        if (!IS_HASH_EXCLUDE_NAME) {
+                                if (S_ISREG(tent.tstat->st_mode))
+                                        update_root_checksum((guchar *) tent.hash);
+                                else if (S_ISLNK(tent.tstat->st_mode) && IS_HASH_SYMLINK)
+                                        update_root_checksum((guchar *) tent.hash);
+                        }
                         if (!IS_HASH_EXCLUDE_NAME)
                                 update_root_checksum((guchar *) path);
                 }
