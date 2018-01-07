@@ -229,9 +229,14 @@ gchar *get_file_checksum(const char *file_path, GChecksumType checksum_type_g)
         close(rfd);
         hash_str = g_strdup(g_checksum_get_string(cksum_g));
         g_checksum_free(cksum_g);
-        g_checksum_update(ROOT_CKSUM_G, (guchar *) hash_str, (gssize) strlen(hash_str));
 
         return hash_str;
+}
+
+
+void update_root_checksum(guchar *hash_str)
+{
+        g_checksum_update(ROOT_CKSUM_G, (guchar *) hash_str, (gssize) strlen((char *) hash_str));
 }
 
 
@@ -352,6 +357,13 @@ int dtree_check(const char *path, const struct stat *sbuf, int type,
                 if (action_trawlent(&tent))
                         return FTW_STOP;
 
+                if (IS_HASH) {
+                        if (S_ISREG(tent.tstat->st_mode))
+                                update_root_checksum((guchar *) tent.hash);
+                        else if (S_ISLNK(tent.tstat->st_mode) && IS_HASH_SYMLINK)
+                                update_root_checksum((guchar *) tent.hash);
+                }
+
                 if (IS_TERSE)
                         output_terse_trawlent(&tent, DELIM);
                 else
@@ -385,13 +397,6 @@ int main(int argc, char *argv[])
                 fprintf(stderr, "Failed parsing arguments: %s\n", error_g->message);
                 exit(EXIT_FAILURE);
         }
-
-        /*
-        if (!PATHS) {
-                fprintf(stderr, "%s\n", g_option_context_get_help(argctx, FALSE, NULL));
-                exit(EXIT_FAILURE);
-        }
-        */
 
         if (argc < 2) {
                 fprintf(stderr, "%s\n", g_option_context_get_help(argctx, FALSE, NULL));
@@ -501,7 +506,6 @@ int main(int argc, char *argv[])
                 i--;
 
         }
-        //g_strfreev(PATHS);
 
 
         exit(EXIT_SUCCESS);

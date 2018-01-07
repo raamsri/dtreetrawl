@@ -11,10 +11,10 @@ Help Options:
 
 Application Options:
   -t, --terse            Produce a terse output; parsable.
-  -d, --delim=:          Character or string delimiter/separator for terse output(default ':').
-                 Ignored if terse flag is not set.
+  -d, --delim=:          Character or string delimiter/separator for terse output(default ':')
   --hash                 Hash the files to produce checksums(default is MD5).
   -c, --checksum=md5     Valid hashing algorithms: md5, sha1, sha256, sha512.
+  -s, --hash-symlink     Include symbolic links' referent name while calculating the root checksum
 ```
 
 Stats of all paths passed as arguments to `dtreetrawl` is printed to the standard output, errors to standard error.
@@ -60,25 +60,6 @@ In the terse output, each `trawlentry`/`tentry`/`tent` is surrounded by the set 
  - total sockets
  - total FIFOs/pipes
 
-__For the terse output:__
-
-Fields appear in the same order as listed. Fields that are not applicable are left blank, which leads to adjacent delimiters.
-After each run, a new line is printed after dstat(summary entry) to help differentiate the next run for another root path.
-Units are not attached to the field values in terse output.
-Time values are in UTC as epoch for terse output(local string form for human readable output)
-Sizes are all in bytes.
-
-File types:
-
-        SOCK  socket
-        LNK   symbolic link
-        REG   regular file
-        BLK   block device
-        DIR   directory
-        CHR   character device
-        FIFO  FIFO/pipes
-
-
 #### Human readable output
 
 `./dtreetrawl --hash -c md5 -- /home/lab/dtreetrawl ../linux-4.14-rc8`
@@ -122,6 +103,31 @@ Stats for /home/lab/linux-4.14-rc8:
                 FIFOs/pipes    : 0
 ```
 #### Parsable terse output
+
+__For the terse output:__
+
+Fields appear in the same order as listed. Fields that are not applicable are left blank, which leads to adjacent delimiters.
+
+After each run, a new line is printed after dstat(summary entry) to help differentiate the next run for another root path.
+
+Units are not attached to the field values in terse output.
+
+Time values are in UTC as epoch for terse output(local string form for human readable output).
+
+Sizes are all in bytes.
+
+File type notation:
+
+        SOCK  socket
+        LNK   symbolic link
+        REG   regular file
+        BLK   block device
+        DIR   directory
+        CHR   character device
+        FIFO  FIFO/pipes
+
+
+
 `./dtreetrawl --hash -t -c md5 -d ":" -- /home/lab/dtreetrawl ../linux-4.14-rc8`
 ```
 ...
@@ -144,10 +150,14 @@ Linux, GCC & GLib-2.0
 
 #### To run the pre compiled binary, clone or fork this repo and `cd` to the directory:
 `./dtreetrawl -h`
+
 ```dtreetrawl --hash -d ":" -c "sha1" -- /stairway/to/heaven /eastblue/southblue/allblue```
 
 #### To compile:
 ```gcc -Wall -Wextra -o dtreetrawl dtreetrawl.c dtreetrawl.h $(pkg-config --cflags --libs glib-2.0)```
+
+To run this by name, symlink this to one of the shell's search PATH:
+```ln -s /path/to/dtreetrawl/dtreetrawl /usr/local/bin/dtreetrawl```
 
 #### TODO:
   - Makefile

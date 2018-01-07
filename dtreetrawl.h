@@ -35,19 +35,19 @@ struct dtreestat {
 };
 
 
-//static gchar    **PATHS;
 static gchar    *DELIM;
 static gchar    *HASH_TYPE;
 static gboolean IS_TERSE = FALSE;
 static gboolean IS_HASH = FALSE;
+static gboolean IS_HASH_SYMLINK = FALSE;
 //static gboolean IS_HASH_DIRENT;
 
 static GOptionEntry entries_g[] = {
-        //{ "path", 'p', 0, G_OPTION_ARG_FILENAME_ARRAY, &PATHS, "Pathname(s) to trawl. Repeat the flag to provide multiple pathnames.", "/trOll/me" },
         { "terse", 't', 0, G_OPTION_ARG_NONE, &IS_TERSE, "Produce a terse output; parsable.", NULL },
-        { "delim", 'd', 0, G_OPTION_ARG_STRING, &DELIM, "Character or string delimiter/separator for terse output(default ':').\n\t\t Ignored if terse flag is not set.", ":" },
+        { "delim", 'd', 0, G_OPTION_ARG_STRING, &DELIM, "Character or string delimiter/separator for terse output(default ':')", ":" },
         { "hash", 0, 0, G_OPTION_ARG_NONE, &IS_HASH, "Hash the files to produce checksums(default is MD5).", NULL },
         { "checksum", 'c', 0, G_OPTION_ARG_STRING, &HASH_TYPE, "Valid hashing algorithms: md5, sha1, sha256, sha512.", "md5" },
+        { "hash-symlink", 's', 0, G_OPTION_ARG_NONE, &IS_HASH_SYMLINK, "Include symbolic links' referent name while calculating the root checksum", NULL },
         { NULL }
 };
 
