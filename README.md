@@ -11,6 +11,7 @@ Help Options:
 
 Application Options:
   -t, --terse               Produce a terse output; parsable.
+  -j, --json                Output as JSON
   -d, --delim=:             Character or string delimiter/separator for terse output(default ':')
   -l, --max-level=N         Do not traverse tree beyond N level(s)
   --hash                    Enable hashing(default is MD5).
@@ -25,7 +26,6 @@ Application Options:
 Stats of all paths passed as arguments to `dtreetrawl` is printed to the standard output, errors to standard error.
 After the stats of trawled entries, a summary of that run for the root path follows. When multiple paths are given as arguments, stats continue to print to the standard output.
 
-In the terse output, each `trawlentry`/`tentry`/`tent` is surrounded by the set delimiter/separator twice. That is, say if the delimiter is `:`, then, at the begining and end of the tentry, `::` will be placed; fields within the tentry will be separated by `:`. A successful run is followed by a summary(`dstat`), to differentiate it from the tentries, it will have only a single delimiter at the begining and ending. `trawlentry` starts with a double delimiter, `dstat` starts with a single delimiter.
 
 `tentry` fields:
 
@@ -108,8 +108,8 @@ Stats for /home/lab/linux-4.14-rc8:
                 FIFOs/pipes    : 0
 ```
 #### Parsable terse output
+In the terse output, each `trawlentry`/`tentry`/`tent` is surrounded by the set delimiter/separator twice. That is, say if the delimiter is `:`, then, at the begining and end of the tentry, `::` will be placed; fields within the tentry will be separated by `:`. A successful run is followed by a summary(`dstat`), to differentiate it from the tentries, it will have only a single delimiter at the begining and ending. `trawlentry` starts with a double delimiter, `dstat` starts with a single delimiter.
 
-__For the terse output:__
 
 Fields appear in the same order as listed. Fields that are not applicable are left blank, which leads to adjacent delimiters.
 
@@ -166,6 +166,5 @@ To run this by name, symlink this to one of the shell's search PATH:
 
 #### TODO:
   - Makefile
-  - For a directory, hash its entry names to obtain a checksum.
   - JSON?
   - Make it portable?

@@ -91,6 +91,104 @@ void output_terse_trawlent(struct trawlent *tent, char *delim)
 }
 
 
+void output_terse_json_trawlent(struct trawlent *tent)
+{
+        fprintf(stdout, "\t\t\t{\n");
+        fprintf(stdout, "\t\t\t\t\"path\":\t\t\"%s\",\n", tent->path);
+        fprintf(stdout, "\t\t\t\t\"basename\":\t\"%s\",\n", tent->basename);
+        fprintf(stdout, "\t\t\t\t\"level\":\t\"%u\",\n", tent->level);
+
+        fprintf(stdout, "\t\t\t\t\"type\":\t\t");
+        switch (tent->tstat->st_mode & S_IFMT) {
+        case S_IFBLK:  fprintf(stdout, "\"BLK\",\n");         break;
+        case S_IFCHR:  fprintf(stdout, "\"CHR\",\n");         break;
+        case S_IFDIR:  fprintf(stdout, "\"DIR\",\n");         break;
+        case S_IFIFO:  fprintf(stdout, "\"FIFO\",\n");        break;
+        case S_IFLNK:  fprintf(stdout, "\"LNK\",\n");         break;
+        case S_IFREG:  fprintf(stdout, "\"REG\",\n");         break;
+        case S_IFSOCK: fprintf(stdout, "\"SOCK\",\n");        break;
+        default:       fprintf(stdout, "\"?\",\n");           break;
+        }
+        fprintf(stdout, "\t\t\t\t\"refname\":\t\"%s\",\n", (tent->refname != NULL) ? tent->refname : "");
+        fprintf(stdout, "\t\t\t\t\"size\":\t\t\"%lld\",\n", (long long) tent->tstat->st_size);
+        fprintf(stdout, "\t\t\t\t\"inode\":\t\"%ld\",\n", (long) tent->tstat->st_ino);
+        fprintf(stdout, "\t\t\t\t\"ndirent\":\t\"%u\",\n", tent->ndirent);
+        fprintf(stdout, "\t\t\t\t\"permission\":\t\"%04lo\",\n", (unsigned long) (tent->tstat->st_mode & 07777));
+        fprintf(stdout, "\t\t\t\t\"nlink\":\t\"%ld\",\n", (long) tent->tstat->st_nlink);
+        fprintf(stdout, "\t\t\t\t\"ownership\":\t\"%ld,%ld\",\n", (long) tent->tstat->st_uid, (long) tent->tstat->st_gid);
+        fprintf(stdout, "\t\t\t\t\"blksize\":\t\"%ld\",\n", (long) tent->tstat->st_blksize);
+        fprintf(stdout, "\t\t\t\t\"nblocks\":\t\"%lld\",\n", (long long) tent->tstat->st_blocks);
+
+        char *ctime_g;
+        ctime_g = time_t_to_utc(tent->tstat->st_ctime);
+        fprintf(stdout, "\t\t\t\t\"ctime\":\t\"%s\",\n", ctime_g);
+        free(ctime_g);
+
+        char *atime_g;
+        atime_g = time_t_to_utc(tent->tstat->st_atime);
+        fprintf(stdout, "\t\t\t\t\"atime\":\t\"%s\",\n", atime_g);
+        free(atime_g);
+
+        char *mtime_g;
+        mtime_g = time_t_to_utc(tent->tstat->st_mtime);
+        fprintf(stdout, "\t\t\t\t\"mtime\":\t\"%s\",\n", mtime_g);
+        free(mtime_g);
+
+        fprintf(stdout, "\t\t\t\t\"hash\":\t\t\"%s\"\n", (tent->hash != NULL) ? tent->hash : "");
+        fprintf(stdout, "\t\t\t},\n");
+
+}
+
+
+void output_human_json_trawlent(struct trawlent *tent)
+{
+        fprintf(stdout, "\t\t\t{\n");
+        fprintf(stdout, "\t\t\t\t\"path\":\t\t\"%s\",\n", tent->path);
+        fprintf(stdout, "\t\t\t\t\"basename\":\t\"%s\",\n", tent->basename);
+        fprintf(stdout, "\t\t\t\t\"level\":\t\"%u\",\n", tent->level);
+
+        fprintf(stdout, "\t\t\t\t\"type\":\t\t");
+        switch (tent->tstat->st_mode & S_IFMT) {
+        case S_IFBLK:  fprintf(stdout, "\"block device\",\n");         break;
+        case S_IFCHR:  fprintf(stdout, "\"character device\",\n");         break;
+        case S_IFDIR:  fprintf(stdout, "\"directory\",\n");         break;
+        case S_IFIFO:  fprintf(stdout, "\"FIFO\",\n");        break;
+        case S_IFLNK:  fprintf(stdout, "\"symlink\",\n");         break;
+        case S_IFREG:  fprintf(stdout, "\"regular file\",\n");         break;
+        case S_IFSOCK: fprintf(stdout, "\"socket\",\n");        break;
+        default:       fprintf(stdout, "\"unknown?\",\n");           break;
+        }
+        fprintf(stdout, "\t\t\t\t\"refname\":\t\"%s\",\n", (tent->refname != NULL) ? tent->refname : "");
+        fprintf(stdout, "\t\t\t\t\"size\":\t\t\"%lld bytes\",\n", (long long) tent->tstat->st_size);
+        fprintf(stdout, "\t\t\t\t\"inode\":\t\"%ld\",\n", (long) tent->tstat->st_ino);
+        fprintf(stdout, "\t\t\t\t\"ndirent\":\t\"%u\",\n", tent->ndirent);
+        fprintf(stdout, "\t\t\t\t\"permission\":\t\"%04lo\",\n", (unsigned long) (tent->tstat->st_mode & 07777));
+        fprintf(stdout, "\t\t\t\t\"nlink\":\t\"%ld\",\n", (long) tent->tstat->st_nlink);
+        fprintf(stdout, "\t\t\t\t\"ownership\":\t\"uid:%ld, gid:%ld\",\n", (long) tent->tstat->st_uid, (long) tent->tstat->st_gid);
+        fprintf(stdout, "\t\t\t\t\"blksize\":\t\"%ld bytes\",\n", (long) tent->tstat->st_blksize);
+        fprintf(stdout, "\t\t\t\t\"nblocks\":\t\"%lld\",\n", (long long) tent->tstat->st_blocks);
+
+        char *ctime_g;
+        ctime_g = time_t_to_local(tent->tstat->st_ctime);
+        fprintf(stdout, "\t\t\t\t\"ctime\":\t\"%s\",\n", ctime_g);
+        free(ctime_g);
+
+        char *atime_g;
+        atime_g = time_t_to_local(tent->tstat->st_atime);
+        fprintf(stdout, "\t\t\t\t\"atime\":\t\"%s\",\n", atime_g);
+        free(atime_g);
+
+        char *mtime_g;
+        mtime_g = time_t_to_local(tent->tstat->st_mtime);
+        fprintf(stdout, "\t\t\t\t\"mtime\":\t\"%s\",\n", mtime_g);
+        free(mtime_g);
+
+        fprintf(stdout, "\t\t\t\t\"hash\":\t\t\"%s\"\n", (tent->hash != NULL) ? tent->hash : "");
+        fprintf(stdout, "\t\t\t},\n");
+
+}
+
+
 void output_human_trawlent(struct trawlent *tent)
 {
         fprintf(stdout, "\n%s\n", tent->path);
@@ -144,6 +242,28 @@ void output_human_trawlent(struct trawlent *tent)
 }
 
 
+void output_human_json_dtreestat(struct dtreestat *dstat)
+{
+        fprintf(stdout, "\t\t\t{\n");
+        fprintf(stdout, "\t\t\t\t\"root_path\":\t\"%s\",\n", ROOT_PATH);
+        fprintf(stdout, "\t\t\t\t\"elapsed\":\t\"%f\",\n", dstat->elapsed);
+        fprintf(stdout, "\t\t\t\t\"start_time\":\t\"%s\",\n", dstat->start_local);
+        fprintf(stdout, "\t\t\t\t\"hash\":\t\t\"%s\",\n", (dstat->hash != NULL) ? dstat->hash : "");
+        fprintf(stdout, "\t\t\t\t\"hash_type\":\t\"%s\",\n", (dstat->hash_type != NULL) ? dstat->hash_type : "");
+        fprintf(stdout, "\t\t\t\t\"nlevel\":\t\"%llu\",\n", dstat->nlevel);
+        fprintf(stdout, "\t\t\t\t\"nsize\":\t\"%llu bytes\",\n", dstat->nsize);
+        fprintf(stdout, "\t\t\t\t\"nentry\":\t\"%llu\",\n", dstat->nentry);
+        fprintf(stdout, "\t\t\t\t\"ndir\":\t\t\"%llu\",\n", dstat->ndir);
+        fprintf(stdout, "\t\t\t\t\"nreg\":\t\t\"%llu\",\n", dstat->nreg);
+        fprintf(stdout, "\t\t\t\t\"nlnk\":\t\t\"%llu\",\n", dstat->nlnk);
+        fprintf(stdout, "\t\t\t\t\"nblk\":\t\t\"%llu\",\n", dstat->nblk);
+        fprintf(stdout, "\t\t\t\t\"nchr\":\t\t\"%llu\",\n", dstat->nchr);
+        fprintf(stdout, "\t\t\t\t\"nsock\":\t\"%llu\",\n", dstat->nsock);
+        fprintf(stdout, "\t\t\t\t\"nfifo\":\t\"%llu\"\n", dstat->nfifo);
+        fprintf(stdout, "\t\t\t},\n");
+}
+
+
 void output_human_dtreestat(struct dtreestat *dstat)
 {
         fprintf(stdout, "\nStats for %s:\n", ROOT_PATH);
@@ -163,6 +283,28 @@ void output_human_dtreestat(struct dtreestat *dstat)
         fprintf(stdout, "\t\tsockets        : %llu\n", dstat->nsock);
         fprintf(stdout, "\t\tFIFOs/pipes    : %llu\n", dstat->nfifo);
         fprintf(stdout, "\n");
+}
+
+
+void output_terse_json_dtreestat(struct dtreestat *dstat)
+{
+        fprintf(stdout, "\t\t\t{\n");
+        fprintf(stdout, "\t\t\t\t\"root_path\":\t\"%s\",\n", ROOT_PATH);
+        fprintf(stdout, "\t\t\t\t\"elapsed\":\t\"%f\",\n", dstat->elapsed);
+        fprintf(stdout, "\t\t\t\t\"start_time\":\t\"%s\",\n", dstat->start_utc);
+        fprintf(stdout, "\t\t\t\t\"hash\":\t\t\"%s\",\n", (dstat->hash != NULL) ? dstat->hash : "");
+        fprintf(stdout, "\t\t\t\t\"hash_type\":\t\"%s\",\n", (dstat->hash_type != NULL) ? dstat->hash_type : "");
+        fprintf(stdout, "\t\t\t\t\"nlevel\":\t\"%llu\",\n", dstat->nlevel);
+        fprintf(stdout, "\t\t\t\t\"nsize\":\t\"%llu\",\n", dstat->nsize);
+        fprintf(stdout, "\t\t\t\t\"nentry\":\t\"%llu\",\n", dstat->nentry);
+        fprintf(stdout, "\t\t\t\t\"ndir\":\t\t\"%llu\",\n", dstat->ndir);
+        fprintf(stdout, "\t\t\t\t\"nreg\":\t\t\"%llu\",\n", dstat->nreg);
+        fprintf(stdout, "\t\t\t\t\"nlnk\":\t\t\"%llu\",\n", dstat->nlnk);
+        fprintf(stdout, "\t\t\t\t\"nblk\":\t\t\"%llu\",\n", dstat->nblk);
+        fprintf(stdout, "\t\t\t\t\"nchr\":\t\t\"%llu\",\n", dstat->nchr);
+        fprintf(stdout, "\t\t\t\t\"nsock\":\t\"%llu\",\n", dstat->nsock);
+        fprintf(stdout, "\t\t\t\t\"nfifo\":\t\"%llu\"\n", dstat->nfifo);
+        fprintf(stdout, "\t\t\t},\n");
 }
 
 
@@ -186,6 +328,7 @@ void output_terse_dtreestat(struct dtreestat *dstat, char *delim)
         fprintf(stdout, "%llu%s", dstat->nfifo, delim);
         fprintf(stdout, "\n\n");
 }
+
 
 gchar *get_dirent_checksum(struct dirent **entrylist, int count, GChecksumType checksum_type_g)
 {
@@ -403,9 +546,15 @@ int dtree_check(const char *path, const struct stat *sbuf, int type,
 
                 if (!IS_PRINT_ONLY_ROOT_HASH) {
                         if (IS_TERSE)
-                                output_terse_trawlent(&tent, DELIM);
+                                if (IS_JSON)
+                                        output_terse_json_trawlent(&tent);
+                                else
+                                        output_terse_trawlent(&tent, DELIM);
                         else
-                                output_human_trawlent(&tent);
+                                if (IS_JSON)
+                                        output_human_json_trawlent(&tent);
+                                else
+                                        output_human_trawlent(&tent);
                 }
                 free(tent.hash);
                 free(tent.refname);
@@ -429,8 +578,10 @@ int main(int argc, char *argv[])
         GError *error_g = NULL;
 
         argctx = g_option_context_new("\"/trawl/me\" [path2,...]");
-        g_option_context_add_main_entries(argctx, entries_g, NULL);
-        g_option_context_set_description(argctx, "Please report bugs at https://github.com/six-k/dtreetrawl or ramsri.hp@gmail.com");
+        (void) g_option_context_add_main_entries(argctx, entries_g, NULL);
+        (void) g_option_context_set_description(argctx, "Please report bugs at https://github.com/six-k/dtreetrawl or ramsri.hp@gmail.com");
+        (void) g_option_context_set_summary(argctx, "dtreetrawl trawls/traverses directory tree or file path" \
+                                " to collect stats of every entry in the tree.");
 
         if (!g_option_context_parse(argctx, &argc, &argv, &error_g)) {
                 fprintf(stderr, "Failed parsing arguments: %s\n", error_g->message);
@@ -485,6 +636,9 @@ int main(int argc, char *argv[])
                           /* FTW_MOUNT          | */
                           FTW_ACTIONRETVAL;
 
+        if (IS_JSON && !IS_PRINT_ONLY_ROOT_HASH) {
+                fprintf(stdout, "{\n");
+        }
 
         int i = argc - 1;
         while (i) {
@@ -508,6 +662,11 @@ int main(int argc, char *argv[])
                 now_utc = g_date_time_format(gdt, "%s");
                 now_local = time_t_to_local(g_date_time_to_unix(gdt));
                 g_date_time_unref(gdt);
+
+                if (IS_JSON && !IS_PRINT_ONLY_ROOT_HASH) {
+                        fprintf(stdout, "\t\"%s\": {\n", ROOT_PATH);
+                        fprintf(stdout, "\t\t\"tentry\": [\n");
+                }
 
                 nftw_ret = nftw(ROOT_PATH, dtree_check, 30, ftw_flags);
                 if (nftw_ret == -1) {
@@ -535,10 +694,24 @@ int main(int argc, char *argv[])
                 }
 
                 if (!IS_PRINT_ONLY_ROOT_HASH) {
-                        if (IS_TERSE)
-                                output_terse_dtreestat(DSTAT, DELIM);
-                        else
-                                output_human_dtreestat(DSTAT);
+                        if (IS_JSON) {
+                                fprintf(stdout, "\t\t{}\n");
+                                fprintf(stdout, "\t\t],\n");
+                                fprintf(stdout, "\t\t\"dstat\": [\n");
+                                if (IS_TERSE)
+                                        output_terse_json_dtreestat(DSTAT);
+                                else
+                                        output_human_json_dtreestat(DSTAT);
+
+                                fprintf(stdout, "\t\t{}\n");
+                                fprintf(stdout, "\t\t]\n");
+                                fprintf(stdout, "\t},\n");
+                        } else {
+                                if (IS_TERSE)
+                                        output_terse_dtreestat(DSTAT, DELIM);
+                                else
+                                        output_human_dtreestat(DSTAT);
+                        }
                 } else {
                         fprintf(stdout, "%s\n", (char *) root_hash_str ? (char *) root_hash_str : "");
                 }
@@ -548,6 +721,11 @@ int main(int argc, char *argv[])
 
                 i--;
 
+        }
+
+        if (IS_JSON && !IS_PRINT_ONLY_ROOT_HASH) {
+                fprintf(stdout, "\t\"\":\"\"\n");
+                fprintf(stdout, "}\n");
         }
 
 

@@ -40,6 +40,7 @@ static gchar    *HASH_TYPE;
 static gint     MAX_LEVEL = -1;
 static gboolean IS_PRINT_ONLY_ROOT_HASH = FALSE;
 static gboolean IS_TERSE = FALSE;
+static gboolean IS_JSON = FALSE;
 static gboolean IS_HASH = FALSE;
 static gboolean IS_HASH_EXCLUDE_NAME = FALSE;
 static gboolean IS_HASH_EXCLUDE_CONTENT = FALSE;
@@ -48,6 +49,7 @@ static gboolean IS_HASH_DIRENT;
 
 static GOptionEntry entries_g[] = {
         { "terse", 't', 0, G_OPTION_ARG_NONE, &IS_TERSE, "Produce a terse output; parsable.", NULL },
+        { "json", 'j', 0, G_OPTION_ARG_NONE, &IS_JSON, "Output as JSON", NULL },
         { "delim", 'd', 0, G_OPTION_ARG_STRING, &DELIM, "Character or string delimiter/separator for terse output(default ':')", ":" },
         { "max-level", 'l', 0, G_OPTION_ARG_INT, &MAX_LEVEL, "Do not traverse tree beyond N level(s)", "N" },
         { "hash", 0, 0, G_OPTION_ARG_NONE, &IS_HASH, "Enable hashing(default is MD5).", NULL },
@@ -68,10 +70,14 @@ static struct dtreestat *DSTAT;
 char *time_t_to_utc(time_t st_time);
 char *time_t_to_local(time_t st_time);
 
-void output_terse_trawlent(struct trawlent *tent, char *delim);
 void output_human_trawlent(struct trawlent *tent);
+void output_human_json_trawlent(struct trawlent *tent);
+void output_terse_trawlent(struct trawlent *tent, char *delim);
+void output_terse_json_trawlent(struct trawlent *tent);
 void output_human_dtreestat(struct dtreestat *dstat);
+void output_human_json_dtreestat(struct dtreestat *dstat);
 void output_terse_dtreestat(struct dtreestat *dstat, char *delim);
+void output_terse_json_dtreestat(struct dtreestat *dstat);
 
 gchar *get_file_checksum(const char *file_path, GChecksumType checksum_type_g);
 
