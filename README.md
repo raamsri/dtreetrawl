@@ -153,18 +153,38 @@ File type notation:
 #### Dependencies
 Linux, GCC & GLib-2.0
 
+#### To compile and install from source(preferred):
+```
+make clean
+make
+make install
+
+# To uninstall
+make uninstall
+```
+
+#### To install from RPM(centos):
+```
+# Pull the RPM
+wget https://github.com/six-k/dtreetrawl/releases/download/dtreetrawl-1.0/dtreetrawl-1.0-1.el7.centos.x86_64.rpm
+
+# Pull the public key
+wget https://github.com/six-k/dtreetrawl/releases/download/dtreetrawl-1.0/RPM-GPG-KEY-dtreetrawl
+
+# Verify signature
+rpm --import ./RPM-GPG-KEY-dtreetrawl
+rpm -K -v ./dtreetrawl-1.0-1.el7.centos.x86_64.rpm
+# should get: dtreetrawl-1.0-1.el7.centos.x86_64.rpm: rsa sha1 (md5) pgp md5 OK
+
+# Install
+yum localinstall dtreetrawl-1.0-1.el7.centos.x86_64.rpm
+```
+
 #### To run the pre compiled binary, clone or fork this repo and `cd` to the directory:
 `./dtreetrawl -h`
 
-```dtreetrawl --hash -d ":" -c "sha1" -- /stairway/to/heaven /eastblue/southblue/allblue```
-
-#### To compile:
-```gcc -Wall -Wextra -o dtreetrawl dtreetrawl.c dtreetrawl.h $(pkg-config --cflags --libs glib-2.0)```
+```./dtreetrawl --hash -d ":" -c "sha1" -- /stairway/to/heaven /eastblue/southblue/allblue```
 
 To run this by name, symlink this to one of the shell's search PATH:
 ```ln -s /path/to/dtreetrawl/dtreetrawl /usr/local/bin/dtreetrawl```
 
-#### TODO:
-  - Makefile
-  - JSON?
-  - Make it portable?
