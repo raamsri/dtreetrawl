@@ -38,6 +38,8 @@ struct dtreestat {
 static gchar	*DELIM;
 static gchar	*HASH_TYPE;
 static gint	MAX_LEVEL = -1;
+static gboolean IS_FOLLOW_SYMLINK = FALSE;
+static gboolean IS_NO_TENT = FALSE;
 static gboolean IS_PRINT_ONLY_ROOT_HASH = FALSE;
 static gboolean IS_TERSE = FALSE;
 static gboolean IS_JSON = FALSE;
@@ -52,6 +54,8 @@ static GOptionEntry entries_g[] = {
 	{ "json", 'j', 0, G_OPTION_ARG_NONE, &IS_JSON, "Output as JSON", NULL },
 	{ "delim", 'd', 0, G_OPTION_ARG_STRING, &DELIM, "Character or string delimiter/separator for terse output(default ':')", ":" },
 	{ "max-level", 'l', 0, G_OPTION_ARG_INT, &MAX_LEVEL, "Do not traverse tree beyond N level(s)", "N" },
+        { "follow-symlink", 'f', 0, G_OPTION_ARG_NONE, &IS_FOLLOW_SYMLINK, "Follow symbolic links", NULL },
+        { "no-tent", 'T', 0, G_OPTION_ARG_NONE, &IS_NO_TENT, "Output only the summary(dstat), no other entries", NULL },
 	{ "hash", 0, 0, G_OPTION_ARG_NONE, &IS_HASH, "Enable hashing(default is MD5).", NULL },
 	{ "checksum", 'c', 0, G_OPTION_ARG_STRING, &HASH_TYPE, "Valid hashing algorithms: md5, sha1, sha256, sha512.", "md5" },
 	{ "only-root-hash", 'R', 0, G_OPTION_ARG_NONE, &IS_PRINT_ONLY_ROOT_HASH, "Output only the root hash. Blank line if --hash is not set", NULL },

@@ -14,6 +14,8 @@ Application Options:
   -j, --json                Output as JSON
   -d, --delim=:             Character or string delimiter/separator for terse output(default ':')
   -l, --max-level=N         Do not traverse tree beyond N level(s)
+  -f, --follow-symlink      Follow symbolic links
+  -T, --no-tent             Output only the summary(dstat), no other entries
   --hash                    Enable hashing(default is MD5).
   -c, --checksum=md5        Valid hashing algorithms: md5, sha1, sha256, sha512.
   -R, --only-root-hash      Output only the root hash. Blank line if --hash is not set

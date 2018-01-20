@@ -554,7 +554,7 @@ int dtree_check(const char *path, const struct stat *sbuf, int type,
 			}
 		}
 
-		if (!IS_PRINT_ONLY_ROOT_HASH) {
+		if (!IS_PRINT_ONLY_ROOT_HASH && !IS_NO_TENT) {
 			if (IS_TERSE) {
 				if (IS_JSON) {
 					output_terse_json_trawlent(&tent);
@@ -574,6 +574,10 @@ int dtree_check(const char *path, const struct stat *sbuf, int type,
 
 		return FTW_CONTINUE;
 	}
+	case FTW_SLN:
+                fprintf(stderr, "File path is a symbolic link pointing to "
+				"a nonexistent file %s. Skipping check!\n", path);
+		return FTW_CONTINUE;
 	default:
 		fprintf(stderr, "Unexpected situation, exiting!\n");
 		return FTW_STOP;
@@ -645,9 +649,13 @@ int main(int argc, char *argv[])
 
 	int nftw_ret;
 	int ftw_flags;
-	ftw_flags	= FTW_PHYS		|
-			  /* FTW_MOUNT		| */
-			  FTW_ACTIONRETVAL;
+	if (IS_FOLLOW_SYMLINK) {
+		ftw_flags       = FTW_ACTIONRETVAL;
+	} else {
+		ftw_flags       = FTW_PHYS      |
+				/* FTW_MOUNT    | */
+				FTW_ACTIONRETVAL;
+	}
 
 	if (IS_JSON && !IS_PRINT_ONLY_ROOT_HASH) {
 		fprintf(stdout, "{\n");
