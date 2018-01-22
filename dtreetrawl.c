@@ -245,21 +245,26 @@ void output_human_trawlent(struct trawlent *tent)
 void output_human_json_dtreestat(struct dtreestat *dstat)
 {
 	fprintf(stdout, "\t\t\t{\n");
-	fprintf(stdout, "\t\t\t\t\"root_path\":\t\"%s\",\n", ROOT_PATH);
-	fprintf(stdout, "\t\t\t\t\"elapsed\":\t\"%f\",\n", dstat->elapsed);
-	fprintf(stdout, "\t\t\t\t\"start_time\":\t\"%s\",\n", dstat->start_local);
-	fprintf(stdout, "\t\t\t\t\"hash\":\t\t\"%s\",\n", (dstat->hash != NULL) ? dstat->hash : "");
-	fprintf(stdout, "\t\t\t\t\"hash_type\":\t\"%s\",\n", (dstat->hash_type != NULL) ? dstat->hash_type : "");
-	fprintf(stdout, "\t\t\t\t\"nlevel\":\t\"%llu\",\n", dstat->nlevel);
-	fprintf(stdout, "\t\t\t\t\"nsize\":\t\"%llu bytes\",\n", dstat->nsize);
-	fprintf(stdout, "\t\t\t\t\"nentry\":\t\"%llu\",\n", dstat->nentry);
-	fprintf(stdout, "\t\t\t\t\"ndir\":\t\t\"%llu\",\n", dstat->ndir);
-	fprintf(stdout, "\t\t\t\t\"nreg\":\t\t\"%llu\",\n", dstat->nreg);
-	fprintf(stdout, "\t\t\t\t\"nlnk\":\t\t\"%llu\",\n", dstat->nlnk);
-	fprintf(stdout, "\t\t\t\t\"nblk\":\t\t\"%llu\",\n", dstat->nblk);
-	fprintf(stdout, "\t\t\t\t\"nchr\":\t\t\"%llu\",\n", dstat->nchr);
-	fprintf(stdout, "\t\t\t\t\"nsock\":\t\"%llu\",\n", dstat->nsock);
-	fprintf(stdout, "\t\t\t\t\"nfifo\":\t\"%llu\"\n", dstat->nfifo);
+	fprintf(stdout, "\t\t\t\t\"root_path\":\t\t\t\"%s\",\n", ROOT_PATH);
+	fprintf(stdout, "\t\t\t\t\"elapsed\":\t\t\t\"%f\",\n", dstat->elapsed);
+	fprintf(stdout, "\t\t\t\t\"start_time\":\t\t\t\"%s\",\n", dstat->start_local);
+	fprintf(stdout, "\t\t\t\t\"follow_symlink\":\t\t\"%s\",\n", (IS_FOLLOW_SYMLINK) ? "yes" : "no");
+	fprintf(stdout, "\t\t\t\t\"hash_exclude_name\":\t\t\"%s\",\n", (IS_HASH_EXCLUDE_NAME) ? "yes" : "no");
+	fprintf(stdout, "\t\t\t\t\"hash_exclude_content\":\t\t\"%s\",\n", (IS_HASH_EXCLUDE_CONTENT) ? "yes" : "no");
+	fprintf(stdout, "\t\t\t\t\"hash_symlink\":\t\t\t\"%s\",\n", (IS_HASH_SYMLINK) ? "yes" : "no");
+	fprintf(stdout, "\t\t\t\t\"hash_dirent\":\t\t\t\"%s\",\n", (IS_HASH_DIRENT) ? "yes" : "no");
+	fprintf(stdout, "\t\t\t\t\"hash\":\t\t\t\t\"%s\",\n", (dstat->hash != NULL) ? dstat->hash : "");
+	fprintf(stdout, "\t\t\t\t\"hash_type\":\t\t\t\"%s\",\n", (dstat->hash_type != NULL) ? dstat->hash_type : "");
+	fprintf(stdout, "\t\t\t\t\"nlevel\":\t\t\t\"%llu\",\n", dstat->nlevel);
+	fprintf(stdout, "\t\t\t\t\"nsize\":\t\t\t\"%llu bytes\",\n", dstat->nsize);
+	fprintf(stdout, "\t\t\t\t\"nentry\":\t\t\t\"%llu\",\n", dstat->nentry);
+	fprintf(stdout, "\t\t\t\t\"ndir\":\t\t\t\t\"%llu\",\n", dstat->ndir);
+	fprintf(stdout, "\t\t\t\t\"nreg\":\t\t\t\t\"%llu\",\n", dstat->nreg);
+	fprintf(stdout, "\t\t\t\t\"nlnk\":\t\t\t\t\"%llu\",\n", dstat->nlnk);
+	fprintf(stdout, "\t\t\t\t\"nblk\":\t\t\t\t\"%llu\",\n", dstat->nblk);
+	fprintf(stdout, "\t\t\t\t\"nchr\":\t\t\t\t\"%llu\",\n", dstat->nchr);
+	fprintf(stdout, "\t\t\t\t\"nsock\":\t\t\t\"%llu\",\n", dstat->nsock);
+	fprintf(stdout, "\t\t\t\t\"nfifo\":\t\t\t\"%llu\"\n", dstat->nfifo);
 	fprintf(stdout, "\t\t\t},\n");
 }
 
@@ -267,21 +272,25 @@ void output_human_json_dtreestat(struct dtreestat *dstat)
 void output_human_dtreestat(struct dtreestat *dstat)
 {
 	fprintf(stdout, "\nStats for %s:\n", ROOT_PATH);
-        fprintf(stdout, "\tElapsed time     : %f s\n", dstat->elapsed);
-        fprintf(stdout, "\tStart time       : %s\n", dstat->start_local);
-        fprintf(stdout, "\tRoot hash        : %s\n", (dstat->hash != NULL) ? dstat->hash : "");
-        fprintf(stdout, "\tHash type        : %s\n", (dstat->hash_type != NULL) ? dstat->hash_type : "");
-        fprintf(stdout, "\tDepth            : %llu\n", dstat->nlevel);
-	fprintf(stdout, "\tTotal, \n");
-        fprintf(stdout, "\t\tsize           : %llu bytes\n", dstat->nsize);
-        fprintf(stdout, "\t\tentries        : %llu\n", dstat->nentry);
-        fprintf(stdout, "\t\tdirectories    : %llu\n", dstat->ndir);
-        fprintf(stdout, "\t\tregular files  : %llu\n", dstat->nreg);
-        fprintf(stdout, "\t\tsymlinks       : %llu\n", dstat->nlnk);
-        fprintf(stdout, "\t\tblock devices  : %llu\n", dstat->nblk);
-        fprintf(stdout, "\t\tchar devices   : %llu\n", dstat->nchr);
-        fprintf(stdout, "\t\tsockets        : %llu\n", dstat->nsock);
-        fprintf(stdout, "\t\tFIFOs/pipes    : %llu\n", dstat->nfifo);
+        fprintf(stdout, "\tElapsed time                 : %f s\n", dstat->elapsed);
+        fprintf(stdout, "\tStart time                   : %s\n", dstat->start_local);
+	fprintf(stdout, "\tFollow Symlink               : %s\n", (IS_FOLLOW_SYMLINK) ? "yes" : "no");
+	fprintf(stdout, "\tExclude name hash            : %s\n", (IS_HASH_EXCLUDE_NAME) ? "yes" : "no");
+	fprintf(stdout, "\tExclude content hash         : %s\n", (IS_HASH_EXCLUDE_CONTENT) ? "yes" : "no");
+	fprintf(stdout, "\tHash symlink ref name        : %s\n", (IS_HASH_SYMLINK) ? "yes" : "no");
+	fprintf(stdout, "\tHash directory entry names   : %s\n", (IS_HASH_DIRENT) ? "yes" : "no");
+        fprintf(stdout, "\tRoot hash                    : %s\n", (dstat->hash != NULL) ? dstat->hash : "");
+        fprintf(stdout, "\tHash type                    : %s\n", (dstat->hash_type != NULL) ? dstat->hash_type : "");
+        fprintf(stdout, "\tDepth                        : %llu\n", dstat->nlevel);
+        fprintf(stdout, "\tSize                         : %llu bytes\n", dstat->nsize);
+        fprintf(stdout, "\tEntries                      : %llu\n", dstat->nentry);
+        fprintf(stdout, "\tDirectories                  : %llu\n", dstat->ndir);
+        fprintf(stdout, "\tRegular files                : %llu\n", dstat->nreg);
+        fprintf(stdout, "\tSymlinks                     : %llu\n", dstat->nlnk);
+        fprintf(stdout, "\tBlock devices                : %llu\n", dstat->nblk);
+        fprintf(stdout, "\tChar devices                 : %llu\n", dstat->nchr);
+        fprintf(stdout, "\tSockets                      : %llu\n", dstat->nsock);
+        fprintf(stdout, "\tFIFOs/pipes                  : %llu\n", dstat->nfifo);
 	fprintf(stdout, "\n");
 }
 
@@ -289,21 +298,26 @@ void output_human_dtreestat(struct dtreestat *dstat)
 void output_terse_json_dtreestat(struct dtreestat *dstat)
 {
 	fprintf(stdout, "\t\t\t{\n");
-	fprintf(stdout, "\t\t\t\t\"root_path\":\t\"%s\",\n", ROOT_PATH);
-	fprintf(stdout, "\t\t\t\t\"elapsed\":\t\"%f\",\n", dstat->elapsed);
-	fprintf(stdout, "\t\t\t\t\"start_time\":\t\"%s\",\n", dstat->start_utc);
-	fprintf(stdout, "\t\t\t\t\"hash\":\t\t\"%s\",\n", (dstat->hash != NULL) ? dstat->hash : "");
-	fprintf(stdout, "\t\t\t\t\"hash_type\":\t\"%s\",\n", (dstat->hash_type != NULL) ? dstat->hash_type : "");
-	fprintf(stdout, "\t\t\t\t\"nlevel\":\t\"%llu\",\n", dstat->nlevel);
-	fprintf(stdout, "\t\t\t\t\"nsize\":\t\"%llu\",\n", dstat->nsize);
-	fprintf(stdout, "\t\t\t\t\"nentry\":\t\"%llu\",\n", dstat->nentry);
-	fprintf(stdout, "\t\t\t\t\"ndir\":\t\t\"%llu\",\n", dstat->ndir);
-	fprintf(stdout, "\t\t\t\t\"nreg\":\t\t\"%llu\",\n", dstat->nreg);
-	fprintf(stdout, "\t\t\t\t\"nlnk\":\t\t\"%llu\",\n", dstat->nlnk);
-	fprintf(stdout, "\t\t\t\t\"nblk\":\t\t\"%llu\",\n", dstat->nblk);
-	fprintf(stdout, "\t\t\t\t\"nchr\":\t\t\"%llu\",\n", dstat->nchr);
-	fprintf(stdout, "\t\t\t\t\"nsock\":\t\"%llu\",\n", dstat->nsock);
-	fprintf(stdout, "\t\t\t\t\"nfifo\":\t\"%llu\"\n", dstat->nfifo);
+	fprintf(stdout, "\t\t\t\t\"root_path\":\t\t\t\"%s\",\n", ROOT_PATH);
+	fprintf(stdout, "\t\t\t\t\"elapsed\":\t\t\t\"%f\",\n", dstat->elapsed);
+	fprintf(stdout, "\t\t\t\t\"start_time\":\t\t\t\"%s\",\n", dstat->start_utc);
+	fprintf(stdout, "\t\t\t\t\"follow_symlink\":\t\t\"%s\",\n", (IS_FOLLOW_SYMLINK) ? "yes" : "no");
+	fprintf(stdout, "\t\t\t\t\"hash_exclude_name\":\t\t\"%s\",\n", (IS_HASH_EXCLUDE_NAME) ? "yes" : "no");
+	fprintf(stdout, "\t\t\t\t\"hash_exclude_content\":\t\t\"%s\",\n", (IS_HASH_EXCLUDE_CONTENT) ? "yes" : "no");
+	fprintf(stdout, "\t\t\t\t\"hash_symlink\":\t\t\t\"%s\",\n", (IS_HASH_SYMLINK) ? "yes" : "no");
+	fprintf(stdout, "\t\t\t\t\"hash_dirent\":\t\t\t\"%s\",\n", (IS_HASH_DIRENT) ? "yes" : "no");
+	fprintf(stdout, "\t\t\t\t\"hash\":\t\t\t\t\"%s\",\n", (dstat->hash != NULL) ? dstat->hash : "");
+	fprintf(stdout, "\t\t\t\t\"hash_type\":\t\t\t\"%s\",\n", (dstat->hash_type != NULL) ? dstat->hash_type : "");
+	fprintf(stdout, "\t\t\t\t\"nlevel\":\t\t\t\"%llu\",\n", dstat->nlevel);
+	fprintf(stdout, "\t\t\t\t\"nsize\":\t\t\t\"%llu\",\n", dstat->nsize);
+	fprintf(stdout, "\t\t\t\t\"nentry\":\t\t\t\"%llu\",\n", dstat->nentry);
+	fprintf(stdout, "\t\t\t\t\"ndir\":\t\t\t\t\"%llu\",\n", dstat->ndir);
+	fprintf(stdout, "\t\t\t\t\"nreg\":\t\t\t\t\"%llu\",\n", dstat->nreg);
+	fprintf(stdout, "\t\t\t\t\"nlnk\":\t\t\t\t\"%llu\",\n", dstat->nlnk);
+	fprintf(stdout, "\t\t\t\t\"nblk\":\t\t\t\t\"%llu\",\n", dstat->nblk);
+	fprintf(stdout, "\t\t\t\t\"nchr\":\t\t\t\t\"%llu\",\n", dstat->nchr);
+	fprintf(stdout, "\t\t\t\t\"nsock\":\t\t\t\"%llu\",\n", dstat->nsock);
+	fprintf(stdout, "\t\t\t\t\"nfifo\":\t\t\t\"%llu\"\n", dstat->nfifo);
 	fprintf(stdout, "\t\t\t},\n");
 }
 
@@ -314,6 +328,11 @@ void output_terse_dtreestat(struct dtreestat *dstat, char *delim)
 	fprintf(stdout, "%s%s", ROOT_PATH, delim);
 	fprintf(stdout, "%f%s", dstat->elapsed, delim);
 	fprintf(stdout, "%s%s", dstat->start_utc, delim);
+	fprintf(stdout, "%s%s", (IS_FOLLOW_SYMLINK) ? "yes" : "no", delim);
+	fprintf(stdout, "%s%s", (IS_HASH_EXCLUDE_NAME) ? "yes" : "no", delim);
+	fprintf(stdout, "%s%s", (IS_HASH_EXCLUDE_CONTENT) ? "yes" : "no", delim);
+	fprintf(stdout, "%s%s", (IS_HASH_SYMLINK) ? "yes" : "no", delim);
+	fprintf(stdout, "%s%s", (IS_HASH_DIRENT) ? "yes" : "no", delim);
 	fprintf(stdout, "%s%s", (dstat->hash != NULL) ? dstat->hash : "", delim);
 	fprintf(stdout, "%s%s", (dstat->hash_type != NULL) ? dstat->hash_type : "", delim);
 	fprintf(stdout, "%llu%s", dstat->nlevel, delim);

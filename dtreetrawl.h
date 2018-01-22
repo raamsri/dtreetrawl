@@ -47,7 +47,7 @@ static gboolean IS_HASH = FALSE;
 static gboolean IS_HASH_EXCLUDE_NAME = FALSE;
 static gboolean IS_HASH_EXCLUDE_CONTENT = FALSE;
 static gboolean IS_HASH_SYMLINK = FALSE;
-static gboolean IS_HASH_DIRENT;
+static gboolean IS_HASH_DIRENT = FALSE;
 
 static GOptionEntry entries_g[] = {
 	{ "terse", 't', 0, G_OPTION_ARG_NONE, &IS_TERSE, "Produce a terse output; parsable.", NULL },

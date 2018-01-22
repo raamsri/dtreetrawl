@@ -54,6 +54,11 @@ After the stats of trawled entries, a summary of that run for the root path foll
  - root path name of this run
  - elapsed time in seconds
  - start time
+ - follow symlink
+ - hash exclude name
+ - hash exclude content
+ - hash symlink ref name
+ - hash directory entry names
  - root hash
  - hash type
  - depth
@@ -69,45 +74,106 @@ After the stats of trawled entries, a summary of that run for the root path foll
 
 #### Human readable output
 
-`./dtreetrawl --hash -c md5 -- /home/lab/dtreetrawl ../linux-4.14-rc8`
+`dtreetrawl -f -F --hash .`
 ```
 ...
 ... //clipped
 ...
-/home/lab/linux-4.14-rc8/CREDITS
-        Base name                    : CREDITS
-        Level                        : 1
-        Type                         : regular file
-        Referent name                :
-        File size                    : 98443 bytes
-        I-node number                : 290850
-        No. directory entries        : 0
-        Permission (octal)           : 0644
-        Link count                   : 1
-        Ownership                    : UID=0, GID=0
-        Preferred I/O block size     : 4096 bytes
-        Blocks allocated             : 200
-        Last status change           : Tue, 21 Nov 17 21:28:18 +0530
-        Last file access             : Thu, 28 Dec 17 00:53:27 +0530
-        Last file modification       : Tue, 21 Nov 17 21:28:18 +0530
-        Hash                         : 9f0312d130016d103aa5fc9d16a2437e
+/home/lab/dtreetrawl/README.md
+	Base name                    : README.md
+	Level                        : 1
+	Type                         : regular file
+	Referent name                : 
+	File size                    : 7483 bytes
+	I-node number                : 305946
+	No. directory entries        : 0
+	Permission (octal)           : 0644
+	Link count                   : 1
+	Ownership                    : UID=0, GID=0
+	Preferred I/O block size     : 4096 bytes
+	Blocks allocated             : 16
+	Last status change           : Sat, 20 Jan 18 14:33:11 +0530
+	Last file access             : Sun, 21 Jan 18 21:42:24 +0530
+	Last file modification       : Sat, 20 Jan 18 14:33:11 +0530
+	Hash                         : 
 
-Stats for /home/lab/linux-4.14-rc8:
-        Elapsed time     : 1.305767 s
-        Start time       : Sun, 07 Jan 18 03:42:39 +0530
-        Root hash        : 434e93111ad6f9335bb4954bc8f4eca4
-        Hash type        : md5
-        Depth            : 8
-        Total,
-                size           : 66850916 bytes
-                entries        : 12484
-                directories    : 763
-                regular files  : 11715
-                symlinks       : 6
-                block devices  : 0
-                char devices   : 0
-                sockets        : 0
-                FIFOs/pipes    : 0
+Stats for /home/lab/dtreetrawl:
+	Elapsed time                 : 0.063725 s
+	Start time                   : Mon, 22 Jan 18 17:07:57 +0530
+	Follow Symlink               : yes
+	Exclude name hash            : no
+	Exclude content hash         : yes
+	Hash symlink ref name        : no
+	Hash directory entry names   : no
+	Root hash                    : 6ddf338bc4fabe53a5eadf8bf8ff26d8
+	Hash type                    : md5
+	Depth                        : 6
+	Size                         : 851355 bytes
+	Entries                      : 241
+	Directories                  : 103
+	Regular files                : 138
+	Symlinks                     : 0
+	Block devices                : 0
+	Char devices                 : 0
+	Sockets                      : 0
+	FIFOs/pipes                  : 0
+```
+
+#### JSON output
+
+`dtreetrawl -f -F --hash -j .`
+```
+...
+... //clipped
+...
+			},
+			{
+				"path":		"/home/lab/dtreetrawl/README.md",
+				"basename":	"README.md",
+				"level":	"1",
+				"type":		"regular file",
+				"refname":	"",
+				"size":		"6680 bytes",
+				"inode":	"304693",
+				"ndirent":	"0",
+				"permission":	"0644",
+				"nlink":	"1",
+				"ownership":	"uid:0, gid:0",
+				"blksize":	"4096 bytes",
+				"nblocks":	"16",
+				"ctime":	"Mon, 22 Jan 18 17:12:25 +0530",
+				"atime":	"Mon, 22 Jan 18 17:12:25 +0530",
+				"mtime":	"Mon, 22 Jan 18 17:12:25 +0530",
+				"hash":		""
+			},
+		{}
+		],
+		"dstat": [
+			{
+				"root_path":			"/home/lab/dtreetrawl",
+				"elapsed":			"0.090811",
+				"start_time":			"Mon, 22 Jan 18 17:17:45 +0530",
+				"follow_symlink":		"yes",
+				"hash_exclude_name":		"no",
+				"hash_exclude_content":		"yes",
+				"hash_symlink":			"no",
+				"hash_dirent":			"no",
+				"hash":				"6ddf338bc4fabe53a5eadf8bf8ff26d8",
+				"hash_type":			"md5",
+				"nlevel":			"6",
+				"nsize":			"850712 bytes",
+				"nentry":			"241",
+				"ndir":				"103",
+				"nreg":				"138",
+				"nlnk":				"0",
+				"nblk":				"0",
+				"nchr":				"0",
+				"nsock":			"0",
+				"nfifo":			"0"
+			},
+...
+... //clipped
+...
 ```
 #### Parsable terse output
 In the terse output, each `trawlentry`/`tentry`/`tent` is surrounded by the set delimiter/separator twice. That is, say if the delimiter is `:`, then, at the begining and end of the tentry, `::` will be placed; fields within the tentry will be separated by `:`. A successful run is followed by a summary(`dstat`), to differentiate it from the tentries, it will have only a single delimiter at the begining and ending. `trawlentry` starts with a double delimiter, `dstat` starts with a single delimiter.
@@ -135,19 +201,15 @@ File type notation:
 
 
 
-`./dtreetrawl --hash -t -c md5 -d ":" -- /home/lab/dtreetrawl ../linux-4.14-rc8`
+`dtreetrawl -f -F -t -d ":" --hash .`
 ```
 ...
 ... //clipped
 ...
-::/home/lab/linux-4.14-rc8/Documentation/misc-devices/isl29003:isl29003:3:REG::1497:297459:0:0644:1:0,0:4096:8:1511279899:1514402607:1511279899:fa7521a2e480f8c623f445a1068264a3::
-::/home/lab/linux-4.14-rc8/Documentation/misc-devices/lis3lv02d:lis3lv02d:3:REG::4304:297461:0:0644:1:0,0:4096:16:1511279899:1514402607:1511279899:9a65535bd8f578f80538a0d2446cf571::
-::/home/lab/linux-4.14-rc8/Documentation/misc-devices/eeprom:eeprom:3:REG::4183:297457:0:0644:1:0,0:4096:16:1511279899:1514402607:1511279899:06908861c5c16bf6f917a85704b8e316::
-::/home/lab/linux-4.14-rc8/Documentation/misc-devices/apds990x.txt:apds990x.txt:3:REG::3552:297454:0:0644:1:0,0:4096:8:1511279899:1514402607:1511279899:567f9502ccf3cdb4a11a7779f72bbfe3::
-::/home/lab/linux-4.14-rc8/.cocciconfig:.cocciconfig:1:REG::59:261650:0:0644:1:0,0:4096:8:1511279898:1514402607:1511279898:876b4d70fb8be5f6af3257cae6a9fa87::
-::/home/lab/linux-4.14-rc8/Kconfig:Kconfig:1:REG::287:298227:0:0644:1:0,0:4096:8:1511279899:1514402607:1511279899:4d682367bedf5218ad52a2cdaf2ce2fc::
-::/home/lab/linux-4.14-rc8/CREDITS:CREDITS:1:REG::98443:290850:0:0644:1:0,0:4096:200:1511279898:1514402607:1511279898:9f0312d130016d103aa5fc9d16a2437e::
-:/home/lab/linux-4.14-rc8:0.532712:1515276988:434e93111ad6f9335bb4954bc8f4eca4:md5:8:66850916:12484:763:11715:6:0:0:0:0:
+::/home/lab/dtreetrawl/Makefile:Makefile:1:REG::498:305832:0:0644:1:0,0:4096:8:1515853283:1516553956:1515853283:::
+::/home/lab/dtreetrawl/dtreetrawl:dtreetrawl:1:REG::44424:304696:0:0755:1:0,0:4096:88:1516620913:1516620917:1516620913:::
+::/home/lab/dtreetrawl/README.md:README.md:1:REG::7463:304693:0:0644:1:0,0:4096:16:1516621215:1516621215:1516621215:::
+:/home/lab/dtreetrawl:0.013780:1516621221:yes:no:yes:no:no:6ddf338bc4fabe53a5eadf8bf8ff26d8:md5:6:851335:241:103:138:0:0:0:0:0:
 
 ```
 
