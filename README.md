@@ -252,3 +252,8 @@ yum localinstall dtreetrawl-1.0-1.el7.centos.x86_64.rpm
 To run this by name, symlink this to one of the shell's search PATH:
 ```ln -s /path/to/dtreetrawl/dtreetrawl /usr/local/bin/dtreetrawl```
 
+#### Acknowledgements
+Folks at [Fractalio](https://fractalio.com) have been kind enough to test this
+tool at production sites and reporting bugs.
+[Purushotham](https://github.com/purushotham-s) & 
+[Gugan](https://github,com/GuGu910) have been a huge help.

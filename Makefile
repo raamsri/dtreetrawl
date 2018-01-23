@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -g -I./ -Wall -Wextra $(shell pkg-config --cflags glib-2.0)
+CFLAGS = -g -O3 -I./ -Wall -Wextra -Wno-unused-parameter $(shell pkg-config --cflags glib-2.0)
 LDFLAGS = $(shell pkg-config --libs glib-2.0)
 
 PROG = dtreetrawl

@@ -19,6 +19,7 @@
 #include "dtreetrawl.h"
 
 static char *ROOT_PATH;
+static GSequence *all_hash_dump_g = NULL;
 
 char *time_t_to_utc(time_t st_time)
 {
@@ -424,6 +425,28 @@ void update_root_checksum(guchar *hash_str)
 	}
 }
 
+int append_to_hash_dump(GSequence *seq, const char *hashstr)
+{
+	GSequenceIter *iterp;
+	char *hstrp;
+	hstrp = strdup(hashstr);
+	iterp = g_sequence_append(seq, hstrp);
+	if (iterp == NULL) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+void update_root_checksum_for_each(char *hashstr, gpointer *user_data)
+{
+	update_root_checksum((guchar *)hashstr);
+}
+
+int sequence_compare_data_g(gpointer *a, gpointer *b, gpointer *user_data)
+{
+	return strcmp((char *)a, (char *)b);
+}
 
 int action_trawlent(struct trawlent *tent)
 {
@@ -561,15 +584,23 @@ int dtree_check(const char *path, const struct stat *sbuf, int type,
 		if (IS_HASH) {
 			if (!IS_HASH_EXCLUDE_CONTENT) {
 				if (S_ISREG(tent.tstat->st_mode)) {
-					update_root_checksum((guchar *) tent.hash);
+					if (append_to_hash_dump(all_hash_dump_g, tent.hash) == 1) {
+						fprintf(stderr, "Failed to append the hash sequence.\n");
+					}
 				} else if (S_ISLNK(tent.tstat->st_mode) && IS_HASH_SYMLINK) {
-					update_root_checksum((guchar *) tent.hash);
+					if (append_to_hash_dump(all_hash_dump_g, tent.hash) == 1) {
+						fprintf(stderr, "Failed to append the hash sequence.\n");
+					}
 				} else if (S_ISDIR(tent.tstat->st_mode) && IS_HASH_DIRENT) {
-					update_root_checksum((guchar *) tent.hash);
+					if (append_to_hash_dump(all_hash_dump_g, tent.hash) == 1) {
+						fprintf(stderr, "Failed to append the hash sequence.\n");
+					}
 				}
 			}
 			if (!IS_HASH_EXCLUDE_NAME) {
-				update_root_checksum((guchar *) path);
+				if (append_to_hash_dump(all_hash_dump_g, path) == 1) {
+					fprintf(stderr, "Failed to append the hash sequence.\n");
+				}
 			}
 		}
 
@@ -629,6 +660,7 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
+	all_hash_dump_g = g_sequence_new(free);
 
 	if (!DELIM) {
 		DELIM = (gchar *) strdup(":");
@@ -727,6 +759,13 @@ int main(int argc, char *argv[])
 
 		gchar *root_hash_str = NULL;
 		if (IS_HASH) {
+			g_sequence_sort(all_hash_dump_g,
+					(GCompareDataFunc)sequence_compare_data_g,
+					NULL);
+			g_sequence_foreach(all_hash_dump_g,
+					(GFunc)update_root_checksum_for_each,
+					NULL);
+			g_sequence_free(all_hash_dump_g);
 			root_hash_str = g_strdup(g_checksum_get_string(ROOT_CKSUM_G));
 			g_checksum_free(ROOT_CKSUM_G);
 			DSTAT->hash = root_hash_str;
