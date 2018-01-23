@@ -443,7 +443,7 @@ void update_root_checksum_for_each(char *hashstr, gpointer *user_data)
 	update_root_checksum((guchar *)hashstr);
 }
 
-int sequence_compare_data_g(gpointer *a, gpointer *b, gpointer *user_data)
+int sequence_compare_data_g(gpointer a, gpointer b, gpointer *user_data)
 {
 	return strcmp((char *)a, (char *)b);
 }
