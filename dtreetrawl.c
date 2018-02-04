@@ -8,18 +8,35 @@
 #include <inttypes.h>
 #include <string.h>
 #include <dirent.h>
-#include <ftw.h>
 #include <limits.h>
 #include <fcntl.h>
 #include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <glib.h>
 
 #include "dtreetrawl.h"
 
-static char *ROOT_PATH;
-static GSequence *all_hash_dump_g = NULL;
+
+char *ROOT_PATH			= NULL;
+struct dtreestat *DSTAT		= NULL;
+gchar *DELIM			= NULL;
+gchar *HASH_TYPE		= NULL;
+gint MAX_LEVEL 			= -1;
+gboolean IS_FOLLOW_SYMLINK	= FALSE;
+gboolean IS_NO_TENT		= FALSE;
+gboolean IS_PRINT_ONLY_ROOT_HASH= FALSE;
+gboolean IS_TERSE		= FALSE;
+gboolean IS_JSON		= FALSE;
+gboolean IS_HASH		= FALSE;
+gboolean IS_HASH_EXCLUDE_NAME	= FALSE;
+gboolean IS_HASH_EXCLUDE_CONTENT= FALSE;
+gboolean IS_HASH_SYMLINK	= FALSE;
+gboolean IS_HASH_DIRENT		= FALSE;
+
+GChecksumType CHECKSUM_G;
+GChecksum *ROOT_CKSUM_G		= NULL;
+GSequence *all_hash_dump_g 	= NULL;
+
 
 char *time_t_to_utc(time_t st_time)
 {
@@ -637,12 +654,30 @@ int dtree_check(const char *path, const struct stat *sbuf, int type,
 
 int main(int argc, char *argv[])
 {
-	GTimer *timer_g;
-	GDateTime *gdt;
-	gchar *now_local;
-	gchar *now_utc;
-	GOptionContext *argctx;
-	GError *error_g = NULL;
+	GTimer *timer_g		= NULL;
+	GDateTime *gdt		= NULL;
+	gchar *now_local	= NULL;
+	gchar *now_utc		= NULL;
+	GOptionContext *argctx	= NULL;
+	GError *error_g 	= NULL;
+
+
+	GOptionEntry entries_g[] = {
+		{ "terse", 't', 0, G_OPTION_ARG_NONE, &IS_TERSE, "Produce a terse output; parsable.", NULL },
+		{ "json", 'j', 0, G_OPTION_ARG_NONE, &IS_JSON, "Output as JSON", NULL },
+		{ "delim", 'd', 0, G_OPTION_ARG_STRING, &DELIM, "Character or string delimiter/separator for terse output(default ':')", ":" },
+		{ "max-level", 'l', 0, G_OPTION_ARG_INT, &MAX_LEVEL, "Do not traverse tree beyond N level(s)", "N" },
+		{ "follow-symlink", 'f', 0, G_OPTION_ARG_NONE, &IS_FOLLOW_SYMLINK, "Follow symbolic links", NULL },
+		{ "no-tent", 'T', 0, G_OPTION_ARG_NONE, &IS_NO_TENT, "Output only the summary(dstat), no other entries", NULL },
+		{ "hash", 0, 0, G_OPTION_ARG_NONE, &IS_HASH, "Enable hashing(default is MD5).", NULL },
+		{ "checksum", 'c', 0, G_OPTION_ARG_STRING, &HASH_TYPE, "Valid hashing algorithms: md5, sha1, sha256, sha512.", "md5" },
+		{ "only-root-hash", 'R', 0, G_OPTION_ARG_NONE, &IS_PRINT_ONLY_ROOT_HASH, "Output only the root hash. Blank line if --hash is not set", NULL },
+		{ "no-name-hash", 'N', 0, G_OPTION_ARG_NONE, &IS_HASH_EXCLUDE_NAME, "Exclude path name while calculating the root checksum", NULL },
+		{ "no-content-hash", 'F', 0, G_OPTION_ARG_NONE, &IS_HASH_EXCLUDE_CONTENT, "Do not hash the contents of the file", NULL },
+		{ "hash-symlink", 's', 0, G_OPTION_ARG_NONE, &IS_HASH_SYMLINK, "Include symbolic links' referent name while calculating the root checksum", NULL },
+		{ "hash-dirent", 'e', 0, G_OPTION_ARG_NONE, &IS_HASH_DIRENT, "Include hash of directory entries while calculating root checksum", NULL },
+		{ NULL }
+	};
 
 	argctx = g_option_context_new("\"/trawl/me\" [path2,...]");
 	(void) g_option_context_add_main_entries(argctx, entries_g, NULL);

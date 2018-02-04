@@ -5,6 +5,25 @@
 #include <time.h>
 #include <ftw.h>
 
+
+extern gint MAX_LEVEL;
+extern gchar *DELIM;
+extern gchar *HASH_TYPE;
+extern gboolean IS_FOLLOW_SYMLINK;
+extern gboolean IS_NO_TENT;
+extern gboolean IS_PRINT_ONLY_ROOT_HASH;
+extern gboolean IS_TERSE;
+extern gboolean IS_JSON;
+extern gboolean IS_HASH;
+extern gboolean IS_HASH_EXCLUDE_NAME;
+extern gboolean IS_HASH_EXCLUDE_CONTENT;
+extern gboolean IS_HASH_SYMLINK;
+extern gboolean IS_HASH_DIRENT;
+
+extern GChecksumType CHECKSUM_G;
+extern GChecksum *ROOT_CKSUM_G;
+extern struct dtreestat *DSTAT;
+
 struct trawlent {
 	const struct stat	*tstat;
 	const char		*path;
@@ -34,42 +53,6 @@ struct dtreestat {
 	char			*start_utc;
 };
 
-
-static gchar	*DELIM;
-static gchar	*HASH_TYPE;
-static gint	MAX_LEVEL = -1;
-static gboolean IS_FOLLOW_SYMLINK = FALSE;
-static gboolean IS_NO_TENT = FALSE;
-static gboolean IS_PRINT_ONLY_ROOT_HASH = FALSE;
-static gboolean IS_TERSE = FALSE;
-static gboolean IS_JSON = FALSE;
-static gboolean IS_HASH = FALSE;
-static gboolean IS_HASH_EXCLUDE_NAME = FALSE;
-static gboolean IS_HASH_EXCLUDE_CONTENT = FALSE;
-static gboolean IS_HASH_SYMLINK = FALSE;
-static gboolean IS_HASH_DIRENT = FALSE;
-
-static GOptionEntry entries_g[] = {
-	{ "terse", 't', 0, G_OPTION_ARG_NONE, &IS_TERSE, "Produce a terse output; parsable.", NULL },
-	{ "json", 'j', 0, G_OPTION_ARG_NONE, &IS_JSON, "Output as JSON", NULL },
-	{ "delim", 'd', 0, G_OPTION_ARG_STRING, &DELIM, "Character or string delimiter/separator for terse output(default ':')", ":" },
-	{ "max-level", 'l', 0, G_OPTION_ARG_INT, &MAX_LEVEL, "Do not traverse tree beyond N level(s)", "N" },
-        { "follow-symlink", 'f', 0, G_OPTION_ARG_NONE, &IS_FOLLOW_SYMLINK, "Follow symbolic links", NULL },
-        { "no-tent", 'T', 0, G_OPTION_ARG_NONE, &IS_NO_TENT, "Output only the summary(dstat), no other entries", NULL },
-	{ "hash", 0, 0, G_OPTION_ARG_NONE, &IS_HASH, "Enable hashing(default is MD5).", NULL },
-	{ "checksum", 'c', 0, G_OPTION_ARG_STRING, &HASH_TYPE, "Valid hashing algorithms: md5, sha1, sha256, sha512.", "md5" },
-	{ "only-root-hash", 'R', 0, G_OPTION_ARG_NONE, &IS_PRINT_ONLY_ROOT_HASH, "Output only the root hash. Blank line if --hash is not set", NULL },
-	{ "no-name-hash", 'N', 0, G_OPTION_ARG_NONE, &IS_HASH_EXCLUDE_NAME, "Exclude path name while calculating the root checksum", NULL },
-	{ "no-content-hash", 'F', 0, G_OPTION_ARG_NONE, &IS_HASH_EXCLUDE_CONTENT, "Do not hash the contents of the file", NULL },
-	{ "hash-symlink", 's', 0, G_OPTION_ARG_NONE, &IS_HASH_SYMLINK, "Include symbolic links' referent name while calculating the root checksum", NULL },
-	{ "hash-dirent", 'e', 0, G_OPTION_ARG_NONE, &IS_HASH_DIRENT, "Include hash of directory entries while calculating root checksum", NULL },
-	{ NULL }
-};
-
-
-static GChecksumType CHECKSUM_G;
-static GChecksum *ROOT_CKSUM_G;
-static struct dtreestat *DSTAT;
 
 char *time_t_to_utc(time_t st_time);
 char *time_t_to_local(time_t st_time);
